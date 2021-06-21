@@ -1,13 +1,16 @@
 import discord
 import os
+import pytz
 import mongo as mong
+from pytz import timezone
 from discord.ext import commands
 from datetime import datetime, date, timedelta
 from discord.ext.tasks import loop
 
 
 bot = commands.Bot(command_prefix='.')
-channel = bot.get_channel(os.environ['DND_CHANNEL'])
+# channel = bot.get_channel(os.environ['DND_CHANNEL'])
+channel = bot.get_channel(714719811208347735)
 
 @bot.event
 async def on_ready():
@@ -17,6 +20,15 @@ async def on_ready():
 @bot.command(pass_context=True)
 async def help(ctx):
     await ctx.send('You just put a date and time in the format of mm/dd/YYYY HH:mm')
+
+@bot.command()
+async def test(ctx):
+    now = datetime.now(tz=pytz.utc)
+    today = date.today()    
+    current_time = now.astimezone(timezone('US/Pacific')).strftime("%H:%M")
+    current_date = now.astimezone(timezone('US/Pacific')).strftime("%m/%d/%Y")
+    print ('Local date is: ', current_date)
+    print ('Local time is: ', current_time)
 
 @bot.command()
 async def request(ctx, date, time):
@@ -49,7 +61,7 @@ async def check_calendar():
     #Get today's date and time and format them
     now = datetime.now()
     today = date.today()    
-    current_time = now.strftime("%H:%M")
+    current_time = now.astimezone(timezone('US/Pacific')).strftime("%H:%M")
     current_date = today.strftime("%m/%d/%Y")
     
     #If there are exactly 24 hours left (1 day before) then remind everybody
