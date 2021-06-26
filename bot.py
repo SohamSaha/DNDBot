@@ -7,9 +7,7 @@ from discord.ext import commands
 from datetime import datetime, date, timedelta
 from discord.ext.tasks import loop
 
-
 bot = commands.Bot(command_prefix='.')
-channel = bot.get_channel(os.environ['DND_CHANNEL'])
 
 @bot.event
 async def on_ready():
@@ -26,7 +24,8 @@ async def request(ctx, date, time):
     mong.update_record('Desired Time', 'component' , 'requested_time', 'value', time)
 
 @loop(count=None, seconds=60)
-async def check_calendar():
+async def check_calendar(ctx):
+    channel = bot.get_channel(int(os.environ['DND_CHANNEL']))
     #Get the values of the desired date and time from the database
     db_date = mong.get_value('Desired Time', 'component', 'requested_date', 'value')
     db_time = mong.get_value('Desired Time', 'component', 'requested_time', 'value')
