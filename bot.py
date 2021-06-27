@@ -31,6 +31,7 @@ async def request(ctx, date, time):
 @tasks.loop(seconds = 60)
 async def check_calendar():
     channel = bot.get_channel(int(os.environ['DND_CHANNEL']))
+    await channel.send('bot actually working this time')
     #Get the values of the desired date and time from the database
     db_date = mong.get_value('Desired Time', 'component', 'requested_date', 'value')
     db_time = mong.get_value('Desired Time', 'component', 'requested_time', 'value')
