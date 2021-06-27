@@ -3,7 +3,7 @@ import os
 import pytz
 import mongo as mong
 from pytz import timezone
-from discord.ext import commands
+from discord.ext import commands, tasks
 from datetime import datetime, date, timedelta
 from discord.ext.tasks import loop
 
@@ -12,6 +12,11 @@ bot = commands.Bot(command_prefix='.')
 @bot.event
 async def on_ready():
     print('Bot is ready')
+    try:
+        check_calendar.start()
+        print('Check calendar loop started properly')
+    except:
+        print("Loop not started properly")
 
 @bot.remove_command("help")
 @bot.command(pass_context=True)
@@ -23,8 +28,8 @@ async def request(ctx, date, time):
     mong.update_record('Desired Time', 'component' , 'requested_date', 'value', date)
     mong.update_record('Desired Time', 'component' , 'requested_time', 'value', time)
 
-@loop(count=None, seconds=60)
-async def check_calendar(ctx):
+@tasks.loop(seconds = 60)
+async def check_calendar():
     channel = bot.get_channel(int(os.environ['DND_CHANNEL']))
     #Get the values of the desired date and time from the database
     db_date = mong.get_value('Desired Time', 'component', 'requested_date', 'value')
@@ -64,9 +69,4 @@ async def check_calendar(ctx):
         elif (current_time == hour_left_check_time_formatted) :
             await channel.send(mong.get_campaign_users() + ' 1 hour left before the next session')
 
-@check_calendar.before_loop
-async def before_check_calendar():
-    await bot.wait_until_ready()  # Wait until bot is ready
-
-check_calendar.start()
 bot.run(os.environ['DND_API_KEY'])
