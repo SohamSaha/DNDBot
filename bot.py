@@ -56,11 +56,6 @@ async def check_calendar():
     now = datetime.now()
     current_time = now.astimezone(timezone('US/Pacific')).strftime("%H:%M")
     current_date = now.astimezone(timezone('US/Pacific')).strftime("%m/%d/%Y")
-
-    print ('desired date: ' + str(db_date))
-    print ('desired time: ' + str(db_time))
-    print ('current date: ' + str(current_date))
-    print ('current_time: ' + str(current_time))
     
     #If there are exactly 24 hours left (1 day before) then remind everybody
     if  (current_date == yesterday_check_formatted):
